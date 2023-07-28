@@ -2,6 +2,7 @@ import ayano from '@/public/images/ayano.jpg'
 import Image from 'next/image';
 
 import Button from '@/components/Button';
+import SignInButton from '@/components/SignInButton';
 
 const Login = () => {
     return (
@@ -44,7 +45,7 @@ const Main = () => {
                 transition ease-in-out delay-50 hover:-translate-y-1 hover:bg-gradient-to-b hover:scale-110 duration-300
             '>
                 <h3 className='text-center font-semibold'> {text}? </h3>
-                <Button text={buttonText} className='w-44 transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-105 hover:shadow-2xl'/>
+                <SignInButton buttonText={buttonText}/>
             </div>
         )
     }

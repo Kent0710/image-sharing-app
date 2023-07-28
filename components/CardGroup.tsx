@@ -13,71 +13,82 @@ import { AiFillHeart } from 'react-icons/ai'
 
 import { useIsSidebarHiddenContext } from '@/providers/IsSidebarHidden';
 
-const CardGroup = () => {
+interface CardGroupProps {
+    emptyText? : string;
+    data : [];
+}
+const CardGroup : React.FC<CardGroupProps> = ({
+    emptyText,
+    data
+}) => {
     const { isSidebarHidden } = useIsSidebarHiddenContext();
 
     return (
-        <div className={twMerge(`
-            flex flex-wrap gap-5 pl-10 h-[45rem] overflow-hidden hover:overflow-y-auto     
-        `,
-            isSidebarHidden && 'gap-8'
-        )}>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
-            <Card text="this is a card"/>
+        <div className='w-full h-full'>
+            {data.length === 0 ? (
+                <div className='flex items-center justify-center w-full h-full'>
+                    <p> {emptyText} </p>
+                </div>
+            ) : (
+                <div className={twMerge(`flex flex-wrap gap-5 pl-10 h-[45rem] overflow-hidden hover:overflow-y-auto`, isSidebarHidden && 'gap-8')}>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                    <Card text="this is a card"/>
+                </div>
+            )}
         </div>
     )
 };

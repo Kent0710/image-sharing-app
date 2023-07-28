@@ -14,7 +14,7 @@ const Main = () => {
     return (
         <div className='flex gap-3 pt-3 p-10 h-full text-neutral-600'>
             
-            {!isSidebarHidden ? <Sidebar /> : null}
+            {!isSidebarHidden ? <Sidebar /> : <ToggledSidebar/>}
             <MainView />
 
         </div>
@@ -49,20 +49,35 @@ const Box : React.FC<BoxProps> = ({
 }
 
 const Sidebar = () => {
+    // handle the fetching of the posts here then send to the card group
+    const data : any = []
+
     return (
         <Box className='basis-1/3' title='Your posts'>
             
-            <CardGroup />
+            <CardGroup emptyText="You don't have any post yet." data={data} />
 
         </Box>
     )
 };
 
+const ToggledSidebar = () => {
+    const { updateIsSidebarHidden } = useIsSidebarHiddenContext();
+
+    return(
+        <div className='bg-slate-300 p-5 rounded-full'>
+            <BiHide size={26} className='hover:cursor-pointer' onClick={() => updateIsSidebarHidden(false)} />
+        </div>
+    )
+}
+
 const MainView = () => {
+    const data : any = []
+
     return (
         <Box className='bg- shadow-none' title='Explore'>
             
-            <CardGroup />
+            <CardGroup emptyText="No posts from the database yet." data={data} />
 
         </Box>
     )

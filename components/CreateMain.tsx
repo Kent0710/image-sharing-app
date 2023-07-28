@@ -10,15 +10,17 @@ import { BiDotsHorizontal } from "react-icons/bi";
 import Button from "./Button";
 
 const CreateMain = () => {
+    const data : any = [];
+
     return (
         <div className="flex gap-3 pt-3 p-10 h-full text-neutral-600">
             
-            <Box className="basis-1/2" title="Your posts">
-                <CardGroup />
+            <Box className="basis-1/4">
+                <PostDropZone />
             </Box>
 
-            <Box className="basis-1/2">
-                <PostDropZone />
+            <Box className="basis-3/4" title="Your posts">
+                <CardGroup data={data} emptyText="You don't have any post yet." />
             </Box>
 
         </div>
@@ -46,28 +48,40 @@ const Box : React.FC<BoxProps> = ({
     )
 }
 
-const CardGroup = () => {
+interface CardGroupProps {
+    emptyText ? : string;
+    data : [];
+}
+const CardGroup : React.FC<CardGroupProps> = ({
+    emptyText,
+    data
+}) => {
     return (
-        <div className="flex flex-wrap gap-5 pl-10 h-[45rem] overflow-hidden hover:overflow-y-auto">
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
-            <Card text="this is a card" />
+        <div className="w-full h-full">
+            {data.length === 0 ? (
+                <div className="flex items-center justify-center w-full h-full">
+                    <p> {emptyText} </p>
+                </div>
+            ) : (
+                <div className="flex flex-wrap gap-5 pl-10 h-[45rem] overflow-hidden hover:overflow-y-auto">
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                    <Card text="this is a card" />
+                </div>
+            )}
         </div>
     )
 }
@@ -144,13 +158,92 @@ const Card : React.FC<CardProps> = ({
     )
 }
 
+import Image from "next/image";
+
+import { ChangeEvent } from "react";
+
 import { useDropzone } from "react-dropzone";
 const PostDropZone = () => {
+    const [imageUrl, setImageUrl] = useState('');
+    const [file, setFile] = useState<any>();
+    const [filename, setFilename] = useState('');
+    const [previewImageUrl, setPreviewImageUrl] = useState('');
+
+
+    const [postUploaded, setPostUploaded] = useState(false);
     const onDrop = (file : any) => {
-        console.log(file);
-    };
+        setPostUploaded(true);
+
+        if (file) {
+            const blobFile = new Blob(file);
+
+            setFile(blobFile);
+            setFilename(file.name);
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImageUrl(reader.result as string);
+            };
+            reader.readAsDataURL(blobFile);
+        }
+    }
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({onDrop});
+
+    const [title, setTitle] = useState('');
+    const [caption, setCaption] = useState('');
+    // handle the submit click event
+    const handleSubmit = async (e : React.SyntheticEvent) => {
+        e.preventDefault();
+        uploadToCloudinary(file)
+            .then((imageUrl) => {
+                uploadPostToDatabase(title, caption, imageUrl)
+                .then((res) => {
+                    console.log(res);
+                })
+            })
+            .catch((err) => {
+                throw new Error (`error on promise uplaod to cloudinary : ${err}`)
+            })
+    }
+
+    if (postUploaded) {
+        return (
+            <div className="flex flex-col gap-3 items-center h-full justify-center">
+                
+                <Image src={previewImageUrl} alt="image" width={0} height={0} className="w-full" />
+
+                <form className="gap-3 flex flex-col px-10 w-full mt-5" onSubmit={handleSubmit}>
+
+                    <label htmlFor="title" className="block text-md font-bold tracking-tight">Title</label>
+                    <input type="text"
+                        name="title"
+                        id="title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        required
+                        autoComplete={title}
+                        className="rounded-lg py-1 px-4 font-semibold"
+                    />
+
+                    <label htmlFor="caption" className="block text-md font-bold mt-5 tracking-tight">Caption</label>
+                    <input type="text"
+                        name="caption"
+                        id="caption"
+                        value={caption}
+                        onChange={(e) => setCaption(e.target.value)}
+                        required
+                        autoComplete={caption}
+                        className="rounded-lg py-1 px-4 w-full"
+                    />
+                    
+                    <Button type='submit' text="Post" className="bg-blue-500 mt-10 w-1/2 place-self-center"/>
+                    <Button type='button' text="Discard" className="bg-red-500 w-1/2 place-self-center" onClick={() => setPostUploaded(false)} />
+                </form>
+
+            </div>
+        )
+    }
 
     return (
         <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} 
@@ -165,6 +258,58 @@ const PostDropZone = () => {
           <Button text='Upload' className="w-40 bg-blue-500"/>
         </div>
       );
+}
+
+async function uploadToCloudinary(file : any, e? : React.SyntheticEvent) {
+    e?.preventDefault();
+    try {
+        const cloudName = "dmvuenhhc";
+        const apiUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+
+        const formData = new FormData;
+        formData.append('file', file);
+        formData.append('upload_preset', 'image-sharing-app-post-images-bucket');
+
+        const response = await fetch (apiUrl, {
+            method : "POST",
+            body : formData
+        });
+
+        if (!response.ok) throw new Error (`api upload failed`);
+
+        const data = await response.json();
+        console.log('Api returned data : ', data);
+        const imageUrl = data.secure_url;
+        return imageUrl;            
+    } catch (err) {
+        throw new Error (`error on upload to cloudinary functino : ${err}`)
+    }
+}
+
+
+async function uploadPostToDatabase(title : string, caption : string, imageUrl : string, e? : React.SyntheticEvent) {
+    e?.preventDefault();
+    try {
+        const response = await fetch ('/api/uploadPost', {
+            method : "POST",
+            headers : {"Content-Type" : "application/json"},
+            body : JSON.stringify({title, caption, imageUrl})
+        });
+
+        if (!response.ok) throw new Error ('error on saving the post to database');
+
+        const data = await response.json();
+        console.log(data);
+        
+        const res = {
+            ok : data.ok,
+        };
+
+        return res;
+
+    } catch (err) {
+        throw new Error (`error on upload post to database function : ${err}`)
+    }
 }
 
 export default CreateMain;
