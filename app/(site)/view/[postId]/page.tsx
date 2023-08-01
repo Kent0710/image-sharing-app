@@ -1,14 +1,15 @@
 import Header from "@/components/Header";
-import SettingsMain from "@/components/SettingsMain";
+import ViewMain from "@/components/ViewMain";
 
-const Settings = () => {
+const ViewedPost = () => {
     return (
         <div className="bg-slate-100 text-neutral-700 h-full w-full flex-col flex gap-2">
             
             <Header />
+            <ViewMain />
 
         </div>
     )
-};  
+};
 
-export default Settings;
+export default ViewedPost;

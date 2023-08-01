@@ -13,9 +13,13 @@ import { AiFillHeart } from 'react-icons/ai'
 
 import { useIsSidebarHiddenContext } from '@/providers/IsSidebarHidden';
 
+import { TypePosts } from '@/types';
+
+import { useRouter } from 'next/navigation';
+
 interface CardGroupProps {
     emptyText? : string;
-    data : [];
+    data : TypePosts[];
 }
 const CardGroup : React.FC<CardGroupProps> = ({
     emptyText,
@@ -30,63 +34,10 @@ const CardGroup : React.FC<CardGroupProps> = ({
                     <p> {emptyText} </p>
                 </div>
             ) : (
-                <div className={twMerge(`flex flex-wrap gap-5 pl-10 h-[45rem] overflow-hidden hover:overflow-y-auto`, isSidebarHidden && 'gap-8')}>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
-                    <Card text="this is a card"/>
+                <div className={twMerge(`flex pl-10 flex-wrap gap-5 h-fit overflow-hidden hover:overflow-y-auto`, isSidebarHidden && 'gap-8')}>
+                    {data.map((item) => (
+                        <Card title={item.title} caption={item.caption} imageUrl={item.imageUrl} id={item.id} key={item.id} />
+                    ))}
                 </div>
             )}
         </div>
@@ -95,19 +46,37 @@ const CardGroup : React.FC<CardGroupProps> = ({
 
 
 interface CardProps {
-    text : string;
+    id : string;
+    title : string;
+    caption : string;
+    imageUrl : string;
 }
 const Card : React.FC<CardProps> = ({
-    text
+    id,
+    title,
+    caption,
+    imageUrl
 }) => {
+    const router = useRouter();
+
     const { isSidebarHidden } = useIsSidebarHiddenContext();
 
     const [isPointerOver, setIsPointerOver] = useState(false);
 
     const handlePointer = () => {
-        console.log('pointer over')
         if (!isPointerOver) setIsPointerOver(true);
         else setIsPointerOver(false)
+    }
+
+    const download = () => {
+        const downloadableUrl = imageUrl.replace(
+            '/upload',
+            '/upload/fl_attachment'
+        );
+
+        const link = document.createElement('a');
+        link.href = downloadableUrl;
+        link.click();
     }
 
     if (isPointerOver) {
@@ -118,7 +87,8 @@ const Card : React.FC<CardProps> = ({
             },
             {
                 icon : BsFillCloudDownloadFill,
-                info : 'download'
+                info : 'download',
+                onClick : download,
             },
             {
                 icon : BiDotsHorizontal,
@@ -127,29 +97,45 @@ const Card : React.FC<CardProps> = ({
         ]
         interface ActionProps {
             icon : any;
+            info : string;
+            onClick : any;
         }
         const Action : React.FC<ActionProps> = ({
             icon : Icon,
+            info,
+            onClick
         }) => {
             return (
-                <Icon size={23} className='fill-white' />
+                <Icon size={23} className='fill-white' onClick={onClick} />
             )
         }
 
+        const viewPost = async (e : React.SyntheticEvent) => {
+            e.preventDefault();
+            try {
+                router.push(`/view/${id}`)
+            } catch (err) {
+                throw new Error (`error on viewing the post : ${err}`)
+            }
+        }
+
         return (
-            // <div className='bg-slate-500 w-40 h-56 rounded-lg flex flex-col justify-between p-5 items-center text-white' onMouseLeave={handlePointer}>
             <div 
+                onClick={viewPost}
                 onMouseLeave={handlePointer}
                 className={twMerge(`
                     bg-slate-500 w-40 h-56 rounded-lg flex flex-col justify-between p-5 items-center text-white
                 `,
                 isSidebarHidden && 'w-44 h-[15rem]'
             )}>
-                <h1 > {text}  pointer true </h1>
+                <div className='flex flex-col items-center w-full h-36'>
+                    <h1 className='font-bold '> {title} </h1>
+                    <p className='w-full trunacte overflow-hidden text-center'> {caption} </p>
+                </div>
 
                 <div className='flex gap-3 place-self-end'>
                     {actionIcons.map((actionIcon) => (
-                        <Action key={actionIcon.info} icon={actionIcon.icon}/>
+                        <Action key={actionIcon.info} icon={actionIcon.icon} info={actionIcon.info} onClick={actionIcon.onClick} />
                     ))}
                 </div>
 
@@ -158,15 +144,18 @@ const Card : React.FC<CardProps> = ({
     }
 
     return (
-        <div 
+        <Image 
+            src={imageUrl}
+            alt='img'
+            width={200}
+            height={200}
             onMouseEnter={handlePointer}
             className={twMerge(`
-                    bg-slate-500 w-40 h-56 rounded-lg flex flex-col justify-between p-5 items-center text-white
-                `,
+                bg-slate-500 w-40 h-56 rounded-lg flex flex-col justify-between items-center text-white shrink-0
+            `,
                 isSidebarHidden && 'w-44 h-[15rem]'
-        )}>    
-            <h1>{text} </h1>
-        </div>
+            )}
+        />
     )
 }
 

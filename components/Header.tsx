@@ -42,7 +42,7 @@ const Header = () => {
     ], [pathname])
 
     return (
-        <div className="bg-slate-200 w-full shadow-2xl h-32 flex items-center justify-around">
+        <div className="bg-slate-200 w-full shadow-2xl h-32 flex items-center justify-around shrink-0">
             
             {navGroup.map((navItem) => (
                 <NavItem key={navItem.text} icon={navItem.icon} text={navItem.text} href={navItem.href} active={navItem.active} />
@@ -97,7 +97,7 @@ const NavItem : React.FC<NavItemProps> = ({
             )}
         >
             <Icon size={26} className='opacity-80' />
-            <h1 className='font-bold tracking-tight text-lg '> {text} </h1>
+            <h1 className='font-bold tracking-tight text-lg hidden md:block'> {text} </h1>
         </Link>
     )
 

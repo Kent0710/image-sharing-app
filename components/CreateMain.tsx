@@ -9,18 +9,22 @@ import { BiDotsHorizontal } from "react-icons/bi";
 
 import Button from "./Button";
 
+import { useUserPosts } from "@/hooks/useUserPosts";
+
 const CreateMain = () => {
-    const data : any = [];
+    const [userPosts, updateUserPosts] = useUserPosts(
+        (state) => [state.userPosts, state.updateUserPosts],
+    )
 
     return (
-        <div className="flex gap-3 pt-3 p-10 h-full text-neutral-600">
+        <div className="flex flex-col md:flex-row gap-3 pt-3 p-10 h-full text-neutral-600">
             
             <Box className="basis-1/4">
                 <PostDropZone />
             </Box>
 
             <Box className="basis-3/4" title="Your posts">
-                <CardGroup data={data} emptyText="You don't have any post yet." />
+                <CardGroup data={userPosts} emptyText="You don't have any post yet." />
             </Box>
 
         </div>
@@ -48,9 +52,10 @@ const Box : React.FC<BoxProps> = ({
     )
 }
 
+import { TypePosts } from "@/types";
 interface CardGroupProps {
     emptyText ? : string;
-    data : [];
+    data : TypePosts[];
 }
 const CardGroup : React.FC<CardGroupProps> = ({
     emptyText,
@@ -63,23 +68,10 @@ const CardGroup : React.FC<CardGroupProps> = ({
                     <p> {emptyText} </p>
                 </div>
             ) : (
-                <div className="flex flex-wrap gap-5 pl-10 h-[45rem] overflow-hidden hover:overflow-y-auto">
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
-                    <Card text="this is a card" />
+                <div className="flex flex-wrap gap-5 pl-10 h-fit overflow-hidden hover:overflow-y-auto">
+                    {data.map((item) => (
+                        <Card title={item.title} caption={item.caption} imageUrl={item.imageUrl} key={item.title} />
+                    ))}
                 </div>
             )}
         </div>
@@ -87,10 +79,14 @@ const CardGroup : React.FC<CardGroupProps> = ({
 }
 
 interface CardProps {
-    text : string;
+    title : string;
+    caption : string;
+    imageUrl : string;
 };
 const Card : React.FC<CardProps> = ({
-    text,
+    title,
+    caption,
+    imageUrl
 }) => {
     const [ isPointerOver, setIsPointerOver ] = useState(false);
 
@@ -98,6 +94,17 @@ const Card : React.FC<CardProps> = ({
         if (!isPointerOver) setIsPointerOver(true);
         else setIsPointerOver(false)
     };
+
+    const download = () => {
+        const downloadableUrl = imageUrl.replace(
+            '/upload',
+            '/upload/fl_attachment'
+        );
+
+        const link = document.createElement('a');
+        link.href = downloadableUrl;
+        link.click();
+    }
 
     if (isPointerOver) {
         const actionIcons = [
@@ -107,7 +114,8 @@ const Card : React.FC<CardProps> = ({
             },
             {
                 icon : BsFillCloudDownloadFill,
-                info : 'download'
+                info : 'download',
+                onClick : download
             },
             {
                 icon : BiDotsHorizontal,
@@ -117,13 +125,17 @@ const Card : React.FC<CardProps> = ({
 
         interface ActionsProps {
             icon : any;
+            info : string;
+            onClick : any;
         };
 
         const Action : React.FC<ActionsProps> = ({
             icon : Icon,
+            info,
+            onClick
         }) => {
             return (
-                <Icon size={26} className='fill-white' />
+                <Icon size={26} className='fill-white' onCick={onClick} />
             )
         }
 
@@ -134,11 +146,14 @@ const Card : React.FC<CardProps> = ({
                     bg-slate-500 w-40 h-56 rounded-lg flex flex-col justify-between p-5 items-center text-white
                 `,
             )}>
-                <h1> {text}  pointer true </h1>
+                <div className='flex flex-col items-center w-full h-36'>
+                    <h1 className='font-bold '> {title} </h1>
+                    <p className='w-full trunacte overflow-hidden text-center'> {caption} </p>
+                </div>
 
                 <div className='flex gap-3 place-self-end'>
                     {actionIcons.map((actionIcon) => (
-                        <Action key={actionIcon.info} icon={actionIcon.icon}/>
+                        <Action key={actionIcon.info} icon={actionIcon.icon} info={actionIcon.info} onClick={actionIcon.onClick} />
                     ))}
                 </div>
 
@@ -147,14 +162,17 @@ const Card : React.FC<CardProps> = ({
     }  
 
     return (
-        <div 
+        <Image 
+            src={imageUrl}
+            alt='img'
+            width={200}
+            height={200}
             onMouseEnter={handlePointer}
             className={twMerge(`
-                    bg-slate-500 w-40 h-56 rounded-lg flex flex-col justify-between p-5 items-center text-white
-                `,
-        )}>    
-            <h1>{text} </h1>
-        </div>
+                bg-slate-500 w-40 h-56 rounded-lg flex flex-col justify-between items-center text-white shrink-0
+            `,
+            )}
+        />
     )
 }
 
@@ -211,7 +229,7 @@ const PostDropZone = () => {
         return (
             <div className="flex flex-col gap-3 items-center h-full justify-center">
                 
-                <Image src={previewImageUrl} alt="image" width={0} height={0} className="w-full" />
+                <Image src={previewImageUrl} alt="image" width={0} height={0} className="w-1/2" />
 
                 <form className="gap-3 flex flex-col px-10 w-full mt-5" onSubmit={handleSubmit}>
 
@@ -290,7 +308,7 @@ async function uploadToCloudinary(file : any, e? : React.SyntheticEvent) {
 async function uploadPostToDatabase(title : string, caption : string, imageUrl : string, e? : React.SyntheticEvent) {
     e?.preventDefault();
     try {
-        const response = await fetch ('/api/uploadPost', {
+        const response = await fetch ('/api/post/upload', {
             method : "POST",
             headers : {"Content-Type" : "application/json"},
             body : JSON.stringify({title, caption, imageUrl})

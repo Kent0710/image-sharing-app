@@ -4,7 +4,7 @@ import Profile from "./Profile";
 
 const AccountMain = () => {
     return (
-        <div className="flex gap-3 pt-3 p-10 h-full text-neutral-600">
+        <div className="flex gap-3 pt-3 p-10 h-full grow-0 text-neutral-600">
 
             <Box>
                 <Profile />

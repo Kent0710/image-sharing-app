@@ -41,7 +41,7 @@ model Posts {
     id            String    @id @default(auto()) @map("_id") @db.ObjectId
     title         String
     caption       String
-    imageUrl      String
+    imageUrl      String    @unique
     authorId      String    @db.ObjectId
     author        User      @relation(fields: [authorId], references: [id], onDelete : Cascade)
 }

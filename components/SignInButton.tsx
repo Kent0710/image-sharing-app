@@ -4,12 +4,15 @@ import Button from "./Button";
 
 import {signIn} from 'next-auth/react'
 
+import { useRouter } from "next/navigation";
 interface SignInButtonProps {
     buttonText : string;
 }
 const SignInButton : React.FC<SignInButtonProps> = ({
     buttonText
 }) => {
+    const router = useRouter();
+
     const handleSignIn = () => {
         signIn('auth0', {callbackUrl : '/'})
     }
